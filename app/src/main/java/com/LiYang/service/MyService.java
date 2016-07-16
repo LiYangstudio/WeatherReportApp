@@ -96,7 +96,7 @@ public class MyService extends Service {
         try {
             String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(districtName, "UTF-8") +
                     "&key=97bd106d65a01a5e6b283518cc7474fa";
-            HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+            HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                 @Override
                 public void onFinish(String respone) {
                     Utility.handleWeatherResponse(MyService.this, respone);

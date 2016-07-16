@@ -1,5 +1,12 @@
 package com.LiYang.util;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +19,7 @@ import java.net.URL;
 public class HttpUtil {  //发送网络请求
 
 
-    public static void sendHttpRequest(final String address, final HttpCallbackListener listener) {
+    public static void HttpURLConnectionSend(final String address, final HttpCallbackListener listener) {//使用HttpURLConnection发送网络请求
 
         HttpURLConnection connection = null;
         try {
@@ -51,6 +58,31 @@ public class HttpUtil {  //发送网络请求
 
     }
 
+    public static void httpClientSend(final String adress, final HttpCallbackListener Listener) { //使用HttpClient发送网络请求
+        try {
+            HttpClient httpClient = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(adress);
+            HttpResponse httpResponse = httpClient.execute(httpGet);
+            String response;
+            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                HttpEntity entity = httpResponse.getEntity();
+                response = EntityUtils.toString(entity, "utf-8");
 
+                if (Listener != null) {
+                    Listener.onFinish(response.toString());
+                }
+            }
+
+        } catch (Exception e) {
+            if (Listener != null) {
+
+                //回调onError()方法
+                Listener.onError(e);
+            }
+
+        }
+    }
 }
+
+
 

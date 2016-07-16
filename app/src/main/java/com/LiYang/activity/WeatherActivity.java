@@ -208,7 +208,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                             "&key=97bd106d65a01a5e6b283518cc7474fa";
                     Log.d("WeatherActivity","网络申请/n");
 
-                    HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+                    HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                         @Override
                         public void onFinish(String response) {
                             Utility.handleWeatherResponse(WeatherActivity.this, response);

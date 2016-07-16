@@ -4,6 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
+
     defaultConfig {
         applicationId "com.LiYang"
         minSdkVersion 15
@@ -17,6 +18,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+}
+android {
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {

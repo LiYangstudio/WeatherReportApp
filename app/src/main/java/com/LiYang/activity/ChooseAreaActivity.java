@@ -185,7 +185,7 @@ public class ChooseAreaActivity extends Activity {
             @Override
             public void run() {
 
-                HttpUtil.sendHttpRequest("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", new HttpCallbackListener() {
+                HttpUtil.httpClientSend("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
                         boolean result = Utility.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
