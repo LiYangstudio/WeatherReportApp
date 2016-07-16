@@ -297,6 +297,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
 
         Intent notificationIntent=new Intent(this, MyService.class);
 
+
         startService(notificationIntent);
 
 
@@ -398,6 +399,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                 .setCancelable(true)
                 .show();
     }
+
 
 
 }

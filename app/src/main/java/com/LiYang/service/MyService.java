@@ -27,6 +27,7 @@ public class MyService extends Service {
     private String districtName;
 
     NotificationCompat.Builder builder=new NotificationCompat.Builder(this);
+    private String saveDistrictName;
 
 
     @Override
@@ -45,10 +46,10 @@ public class MyService extends Service {
 
 
         Log.d("MyService","验证城市/n"+prefs.getString("city_name","")+"验证气候/n"+prefs.getString("todayWeather",""));
-
         Intent intent = new Intent(this, WeatherActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
+
 
         Notification noti=builder.build();
 
@@ -70,7 +71,12 @@ public class MyService extends Service {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         builder.setContentTitle(prefs.getString("city_name",""));
         builder.setContentText(prefs.getString("todayWeather",""));
+
+
+
+
         Notification noti=builder.build();
+
 
         startForeground(1,noti);
 
