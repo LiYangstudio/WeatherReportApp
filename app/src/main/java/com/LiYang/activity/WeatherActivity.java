@@ -34,7 +34,7 @@ import java.net.URLEncoder;
 public class WeatherActivity extends Activity implements View.OnClickListener {
 
     private WeatherDB mWeatherDB;
-    private String newName;
+    private String mNewName;
 
 
     private TextView mWeatherDespText;
@@ -94,9 +94,9 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
     private TextView mTodayWeek;
     private TextView mCity;
     private TextView mClothAdvice;
-    private Handler handler=new Handler(){
-        public void handleMessage(Message msg){
-            switch(msg.what){
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case 1:
                     showWeather();
                     break;
@@ -183,11 +183,9 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         String districtName = getIntent().getStringExtra("district_name");
 
 
-
         if (!TextUtils.isEmpty(districtName)) { //有县级代号时就去查询天气
             mWeatherDespText.setText("加载中...");
             queryWeather(districtName);
-
 
 
         } else {//没有县级代号时就直接显示本地天气
@@ -199,29 +197,29 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
 
     //查询天气
     private void queryWeather(String name) {      //从服务器查询天气信息，
-        newName = name;
+        mNewName = name;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(newName, "UTF-8") +
+                    String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(mNewName, "UTF-8") +
                             "&key=97bd106d65a01a5e6b283518cc7474fa";
-                    Log.d("WeatherActivity","网络申请/n");
+                    Log.d("WeatherActivity", "网络申请/n");
 
                     HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                         @Override
                         public void onFinish(String response) {
                             Utility.handleWeatherResponse(WeatherActivity.this, response);
-                            Log.d("WeatherActivity","网络申请成功/n");
-                            Message message=new Message();
-                            message.what=1;
+                            Log.d("WeatherActivity", "网络申请成功/n");
+                            Message message = new Message();
+                            message.what = 1;
                             handler.sendMessage(message);
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            Message message=new Message();
-                            message.what=0;
+                            Message message = new Message();
+                            message.what = 0;
                             handler.sendMessage(message);
                         }
                     });
@@ -271,7 +269,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         mWindDirection.setText(prefs.getString("windDirection", ""));
         mWindStrength.setText(prefs.getString("windStrength", ""));
         mClothAdvice.setText(prefs.getString("clothAdvice", ""));
-        Log.d("WeatherActivity","这里是时间：/n"+prefs.getString("time",""));
+        Log.d("WeatherActivity", "这里是时间：/n" + prefs.getString("time", ""));
         mTime.setText(prefs.getString("time", ""));
         mTodayWeek.setText(prefs.getString("todayWeek", ""));
         mCity.setText(prefs.getString("city_name", ""));
@@ -293,9 +291,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         mSeventhDayFb.setImageResource(getResources().getIdentifier(prefs.getString("7dayFb", ""), "drawable", getPackageName()));
 
 
-
-
-        Intent notificationIntent=new Intent(this, MyService.class);
+        Intent notificationIntent = new Intent(this, MyService.class);
 
 
         startService(notificationIntent);
@@ -399,7 +395,6 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                 .setCancelable(true)
                 .show();
     }
-
 
 
 }

@@ -54,8 +54,6 @@ public class HttpUtil {  //发送网络请求
 
             }
         }
-
-
     }
 
     public static void httpClientSend(final String adress, final HttpCallbackListener Listener) { //使用HttpClient发送网络请求
@@ -82,7 +80,11 @@ public class HttpUtil {  //发送网络请求
 
         }
     }
+
 }
+
+
+
 
 
 

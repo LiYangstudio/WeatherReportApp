@@ -23,43 +23,43 @@ import java.net.URLEncoder;
 /**
  * Created by A555LF on 2016/7/15.
  */
-public class MyService extends Service {
-    private String districtName;
+public class MyService extends Service {  //一个Service完成后台更新服务和定时更新
+    private String mDistrictName;
 
-    NotificationCompat.Builder builder=new NotificationCompat.Builder(this);
-    private String saveDistrictName;
+    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
 
 
     @Override
-    public IBinder onBind(Intent intent){
+    public IBinder onBind(Intent intent) {
 
         return null;
     }
+
     @Override
-    public void onCreate(){
+    public void onCreate() {
         super.onCreate();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        builder.setWhen(System.currentTimeMillis());
-        builder.setSmallIcon(R.drawable.ic_notification);
-        builder.setContentTitle(prefs.getString("city_name",""));
-        builder.setContentText(prefs.getString("todayWeather",""));
+        mBuilder.setWhen(System.currentTimeMillis());
+        mBuilder.setSmallIcon(R.drawable.ic_notification);
+        mBuilder.setContentTitle(prefs.getString("city_name", ""));
+        mBuilder.setContentText(prefs.getString("todayWeather", ""));
 
 
-        Log.d("MyService","验证城市/n"+prefs.getString("city_name","")+"验证气候/n"+prefs.getString("todayWeather",""));
+        Log.d("MyService", "验证城市/n" + prefs.getString("city_name", "") + "验证气候/n" + prefs.getString("todayWeather", ""));
         Intent intent = new Intent(this, WeatherActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(pendingIntent);
+        mBuilder.setContentIntent(pendingIntent);
 
 
-        Notification noti=builder.build();
+        Notification noti = mBuilder.build();
 
-        startForeground(1,noti);
-
+        startForeground(1, noti);
 
 
     }
+
     @Override
-    public int onStartCommand(Intent intent,int flags,int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -69,38 +69,38 @@ public class MyService extends Service {
             }
         }).start();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        builder.setContentTitle(prefs.getString("city_name",""));
-        builder.setContentText(prefs.getString("todayWeather",""));
+        mBuilder.setContentTitle(prefs.getString("city_name", ""));
+        mBuilder.setContentText(prefs.getString("todayWeather", ""));
 
 
+        Notification noti = mBuilder.build();
 
 
-        Notification noti=builder.build();
-
-
-        startForeground(1,noti);
+        startForeground(1, noti);
 
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        int sixHour =6*60*60*1000;
+        int sixHour = 6 * 60 * 60 * 1000;
         long triggerAtTime = SystemClock.elapsedRealtime() + sixHour;
         Intent alarmIntent = new Intent(this, AlarmUpdateReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);
 
-        return super.onStartCommand(intent,flags,startId);
+        return super.onStartCommand(intent, flags, startId);
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
     }
+
     private void updateWeather() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        districtName = prefs.getString("city_name", "");
+        mDistrictName = prefs.getString("city_name", "");
 
 
         try {
-            String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(districtName, "UTF-8") +
+            String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(mDistrictName, "UTF-8") +
                     "&key=97bd106d65a01a5e6b283518cc7474fa";
             HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                 @Override

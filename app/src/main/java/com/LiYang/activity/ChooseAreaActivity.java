@@ -49,15 +49,14 @@ public class ChooseAreaActivity extends Activity {
     private City mSelectedCity;
     private int mCurrentLevel;
     private boolean mFromWeatherActivity;
-    private int findProvinceId;
+    private int mFindProvinceId;
     private CityAdapter mCityAdapter;
 
 
-
-    private Handler handler=new Handler(){
-        public void handleMessage(Message msg){
-            String type=(String)msg.obj;
-            switch(msg.what){
+    private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            String type = (String) msg.obj;
+            switch (msg.what) {
                 case 1:
                     closeProgressDialog();
                     if (type.equals("Province")) {
@@ -78,16 +77,15 @@ public class ChooseAreaActivity extends Activity {
     };
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        findProvinceId = getIntent().getIntExtra("find_provinceId", -1);
+        mFindProvinceId = getIntent().getIntExtra("find_provinceId", -1);
         mFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this); //已经选择了城市且不是从WeatherActivity跳转过来,才会直接跳转到WeatherActivity
 
 
-        if (preferences.getBoolean("citySelected", false) && !mFromWeatherActivity && findProvinceId == -1) {
+        if (preferences.getBoolean("citySelected", false) && !mFromWeatherActivity && mFindProvinceId == -1) {
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();
@@ -98,7 +96,7 @@ public class ChooseAreaActivity extends Activity {
         mTitleText = (TextView) findViewById(R.id.chooseareaactivity_tv_titletext);
         mListView = (ListView) findViewById(R.id.chooseareaactivity_lv_list);
         mLists = new ArrayList<>();
-        mCityAdapter = new CityAdapter(this,R.layout.activity_citylist, mLists);
+        mCityAdapter = new CityAdapter(this, R.layout.activity_citylist, mLists);
         mWeatherDB = WeatherDB.getInstance(this);
 
         mListView.setAdapter(mCityAdapter);
@@ -190,9 +188,9 @@ public class ChooseAreaActivity extends Activity {
                     public void onFinish(String response) {
                         boolean result = Utility.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
                         if (result) {
-                            Message message=new Message();
-                            message.what=1;
-                            message.obj=type;
+                            Message message = new Message();
+                            message.what = 1;
+                            message.obj = type;
                             handler.sendMessage(message);
                             //通过runOnUiThread()方法回到主线程处理逻辑
 
@@ -203,8 +201,8 @@ public class ChooseAreaActivity extends Activity {
 
                     @Override
                     public void onError(Exception e) {
-                        Message message=new Message();
-                        message.what=0;
+                        Message message = new Message();
+                        message.what = 0;
                         handler.sendMessage(message);
 
                     }

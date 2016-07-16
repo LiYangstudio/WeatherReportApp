@@ -25,10 +25,10 @@ import java.util.List;
 public class Utility {
 
     private static WeatherDB mWeatherDB;
-    private static String todayInfo;  //发短信和邮件的文本
+    private static String mTodayInfo;  //发短信和邮件的文本
 
     public static String getTodayInfo() {
-        return todayInfo;
+        return mTodayInfo;
     }
 
     public static boolean handleResponse(WeatherDB weatherDB, String response) {
@@ -215,7 +215,7 @@ public class Utility {
 
                     futureWeatherList.add(futureBean);
                 }
-                todayInfo = date + cityName + "天气信息列表:" + "\n  温度：" + temperature + "\n  天气：" + weather + "\n  风力:" + wind + "\n  湿度：" + humidity + "\n穿衣指数：" + cloth + "\n旅游指数：" + travel + "\n紫外线强度：" + sun;
+                mTodayInfo = date + cityName + "天气信息列表:" + "\n  温度：" + temperature + "\n  天气：" + weather + "\n  风力:" + wind + "\n  湿度：" + humidity + "\n穿衣指数：" + cloth + "\n旅游指数：" + travel + "\n紫外线强度：" + sun;
 
 
                 return  saveWeatherInfo(context, cityName, weather, temperature, date, futureWeatherList, time, fa, fb, sun, exercises, humidity, wind, travel, cloth, todayWeek, washCar, windStrength, windDirection, clothAdvice);
