@@ -1,9 +1,9 @@
 package com.LiYang.bean;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class FutureWeather {  //设置这个类读取聚合数据里的future信息
+public class FutureWeatherBean {
     String temperature;
     String week;
     String weather;
@@ -55,6 +55,6 @@ public class FutureWeather {  //设置这个类读取聚合数据里的future信
 
         return temperature;
     }
+
+
 }
-
-

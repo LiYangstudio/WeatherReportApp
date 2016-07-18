@@ -28,7 +28,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="8115000"  />
-        <service android:name=".service.MyService"></service>
+        <service android:name=".service.NotiAndUpdateService"></service>
 
         <receiver android:name=".service.AlarmUpdateReceiver"></receiver>
 

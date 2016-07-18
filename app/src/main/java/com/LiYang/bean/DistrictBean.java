@@ -1,9 +1,9 @@
 package com.LiYang.bean;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class District {
+public class DistrictBean {
     private int id;
     private String districtName;
     private int cityId; //该地区对应的市级区号
@@ -31,7 +31,5 @@ public class District {
     public void setCityId(int cityId) {
         this.cityId = cityId;
     }
+
 }
-
-
-

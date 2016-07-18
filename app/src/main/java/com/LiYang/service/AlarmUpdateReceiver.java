@@ -12,7 +12,7 @@ public class AlarmUpdateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
         Log.d("AlaramUpdateReceiver","广播已被收到");
-        Intent receiverIntent=new Intent(context,MyService.class);
+        Intent receiverIntent=new Intent(context,NotiAndUpdateService.class);
         context.startService(receiverIntent);
     }
 }

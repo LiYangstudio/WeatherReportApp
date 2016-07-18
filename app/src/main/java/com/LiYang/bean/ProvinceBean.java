@@ -1,9 +1,9 @@
 package com.LiYang.bean;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class Province {
+public class ProvinceBean {
     private int id;
     private String provinceName;
 
@@ -22,4 +22,6 @@ public class Province {
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
     }
+
+
 }

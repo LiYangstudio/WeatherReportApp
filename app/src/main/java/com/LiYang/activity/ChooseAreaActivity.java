@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -16,13 +15,13 @@ import android.widget.Toast;
 
 import com.LiYang.R;
 import com.LiYang.adapter.CityAdapter;
-import com.LiYang.bean.City;
-import com.LiYang.bean.District;
-import com.LiYang.bean.Province;
+import com.LiYang.bean.CityBean;
+import com.LiYang.bean.DistrictBean;
+import com.LiYang.bean.ProvinceBean;
 import com.LiYang.db.WeatherDB;
 import com.LiYang.util.HttpCallbackListener;
 import com.LiYang.util.HttpUtil;
-import com.LiYang.util.Utility;
+import com.LiYang.util.UtilityDistrict;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,14 +41,13 @@ public class ChooseAreaActivity extends Activity {
     private List<String> mLists;
 
     private WeatherDB mWeatherDB;
-    private List<Province> mProvinceList;
-    private List<City> mCityList;
-    private List<District> mDistrictList;
-    private Province mSelectedProvince;
-    private City mSelectedCity;
+    private List<ProvinceBean> mProvinceList;
+    private List<CityBean> mCityList;
+    private List<DistrictBean> mDistrictList;
+    private ProvinceBean mSelectedProvince;
+    private CityBean mSelectedCity;
     private int mCurrentLevel;
-    private boolean mFromWeatherActivity;
-    private int mFindProvinceId;
+  private boolean mFromWeatherActivity;
     private CityAdapter mCityAdapter;
 
 
@@ -80,12 +78,12 @@ public class ChooseAreaActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFindProvinceId = getIntent().getIntExtra("find_provinceId", -1);
-        mFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this); //已经选择了城市且不是从WeatherActivity跳转过来,才会直接跳转到WeatherActivity
+       int findProvinceId = getIntent().getIntExtra("find_provinceId", -1);
+       mFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
+        SharedPreferences preferences =getSharedPreferences("weatherInformation",MODE_PRIVATE); //已经选择了城市且不是从WeatherActivity跳转过来,才会直接跳转到WeatherActivity
 
 
-        if (preferences.getBoolean("citySelected", false) && !mFromWeatherActivity && mFindProvinceId == -1) {
+        if (preferences.getBoolean("citySelected", false) && !mFromWeatherActivity && findProvinceId == -1) {
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();
@@ -130,7 +128,7 @@ public class ChooseAreaActivity extends Activity {
         mProvinceList = mWeatherDB.loadProvinces();
         if (mProvinceList.size() > 0) {
             mLists.clear();
-            for (Province province : mProvinceList) {
+            for (ProvinceBean province : mProvinceList) {
                 mLists.add(province.getProvinceName());
             }
             mCityAdapter.notifyDataSetChanged();
@@ -147,7 +145,7 @@ public class ChooseAreaActivity extends Activity {
         mCityList = mWeatherDB.loadCities(mSelectedProvince.getId());
         if (mCityList.size() > 0) {
             mLists.clear();
-            for (City city : mCityList) {
+            for (CityBean city : mCityList) {
                 mLists.add(city.getCityName());
             }
             mCityAdapter.notifyDataSetChanged();
@@ -164,7 +162,7 @@ public class ChooseAreaActivity extends Activity {
         mDistrictList = mWeatherDB.loadDistricts(mSelectedCity.getId());
         if (mDistrictList.size() > 0) {
             mLists.clear();
-            for (District district : mDistrictList) {
+            for (DistrictBean district : mDistrictList) {
                 mLists.add(district.getDistrictName());
             }
             mCityAdapter.notifyDataSetChanged();
@@ -186,7 +184,7 @@ public class ChooseAreaActivity extends Activity {
                 HttpUtil.httpClientSend("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", new HttpCallbackListener() {
                     @Override
                     public void onFinish(String response) {
-                        boolean result = Utility.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
+                        boolean result = UtilityDistrict.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
                         if (result) {
                             Message message = new Message();
                             message.what = 1;

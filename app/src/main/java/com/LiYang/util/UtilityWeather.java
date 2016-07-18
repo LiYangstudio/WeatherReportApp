@@ -2,149 +2,33 @@ package com.LiYang.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.JsonReader;
 import android.util.Log;
 
-import com.LiYang.bean.City;
-import com.LiYang.bean.District;
-import com.LiYang.bean.FutureWeather;
-import com.LiYang.bean.Province;
-import com.LiYang.db.WeatherDB;
+import com.LiYang.bean.FutureWeatherBean;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class Utility {
+public class UtilityWeather {
 
-    private static WeatherDB mWeatherDB;
+
     private static String mTodayInfo;  //发短信和邮件的文本
 
     public static String getTodayInfo() {
         return mTodayInfo;
     }
 
-    public static boolean handleResponse(WeatherDB weatherDB, String response) {
 
-        mWeatherDB = weatherDB;
-        JsonReader reader = new JsonReader(new StringReader(response));
-        boolean flag = false;
-        try {
-            reader.beginObject();
-            while (reader.hasNext()) {
-                String nodeName = reader.nextName();
-                if (nodeName.equals("resultcode")) {
-                    if (reader.nextString().equals("200")) {
-                        flag = true;
-                    }
-                } else if (nodeName.equals("result") && flag) {
-                    saveAreaToDatabase(reader);
-                } else {
-                    reader.skipValue();
-                }
-            }
-            reader.endObject();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private static boolean saveAreaToDatabase(JsonReader reader) {  //解析包含城市列表的JSON数据
-
-        String provinceName = null;
-        String cityName = null;
-        String districtName = null;
-        List<String> provinceNames = new ArrayList<>();
-        List<String> cityNames = new ArrayList<>();
-        boolean changedProvince = false;
-        boolean changedCity = false;
-        int provinceId = 0;
-        int cityId = 0;
-        int districtId = 0;
-        Province previousProvince = new Province();
-        City previousCity = new City();
-
-        try {
-            reader.beginArray();
-            while (reader.hasNext()) {
-                reader.beginObject();
-                while (reader.hasNext()) {
-                    String nodeName = reader.nextName();
-                    if (nodeName.equals("province")) {
-                        provinceName = reader.nextString().trim();
-                        if (!provinceNames.contains(provinceName)) {
-                            provinceNames.add(provinceName);
-                            changedProvince = true;
-                            provinceId++;
-                        }
-                    } else if (nodeName.equals("city")) {
-                        cityName = reader.nextString().trim();
-                        if (!cityNames.contains(cityName)) {
-                            cityNames.add(cityName);
-                            changedCity = true;
-                            cityId++;
-
-                        }
-                    } else if (nodeName.equals("district")) {
-                        districtName = reader.nextString().trim();
-                    } else {
-                        reader.skipValue();
-                    }
-                }
-                reader.endObject();
-                Log.d("Utility", "\nprovince_name = " + provinceName +
-                        "\ncity_name = " + cityName + "\ndistrict_name = " + districtName);//显示初始化载入城市列表的过程
-
-                if (changedProvince) {
-                    Province province = new Province();
-                    province.setId(provinceId);
-                    province.setProvinceName(provinceName);
-                    previousProvince = province;
-                    mWeatherDB.saveProvince(province);
-                    changedProvince = false;
-
-                }
-
-                if (changedCity) {
-
-                    City city = new City();
-                    city.setId(cityId);
-                    city.setCityName(cityName);
-                    city.setProvinceId(previousProvince.getId());
-                    previousCity = city;
-                    mWeatherDB.saveCity(city);
-                    changedCity = false;
-
-                }
-
-                District district = new District();
-                districtId++;
-                district.setId(districtId);
-                district.setDistrictName(districtName);
-                district.setCityId(previousCity.getId());
-                mWeatherDB.saveDistrict(district);
-
-            }
-            reader.endArray();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
 
     public static boolean handleWeatherResponse(Context context, String data) {
-        List<FutureWeather> futureWeatherList = new ArrayList<>();
+        List<FutureWeatherBean> futureWeatherList = new ArrayList<>();
         try {
             Log.d("Utility","进入解析/n");
             JSONObject response = new JSONObject(data);
@@ -199,7 +83,7 @@ public class Utility {
                 for (int i = 0; i < futureArray.length(); i++) {
 
                     JSONObject futureObject = futureArray.getJSONObject(i);
-                    FutureWeather futureBean = new FutureWeather();
+                    FutureWeatherBean futureBean = new FutureWeatherBean();
                     futureBean.setWeek(futureObject.getString("week"));
                     futureBean.setTemperature(futureObject.getString("temperature"));
                     futureBean.setWeather(futureObject.getString("weather"));
@@ -230,9 +114,11 @@ public class Utility {
 
 
     private static boolean saveWeatherInfo(Context context, String cityName, String weather,
-                                           String temperature, String date, List<FutureWeather> list, String time, String fa, String fb, String sun, String exercises, String humidity, String wind, String travel, String cloth, String todayWeek, String washCar, String windStrength, String windDirection, String clothAdvice) {
+                                           String temperature, String date, List<FutureWeatherBean> list, String time, String fa, String fb, String sun, String exercises, String humidity, String wind, String travel, String cloth, String todayWeek, String washCar, String windStrength, String windDirection, String clothAdvice) {
 
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+        SharedPreferences prefs =context.getSharedPreferences("weatherInformation",context.MODE_PRIVATE);
+        SharedPreferences.Editor editor =prefs.edit();
         editor.putBoolean("citySelected", true);
         editor.putString("city_name", cityName);
         editor.putString("todayWeather", weather);

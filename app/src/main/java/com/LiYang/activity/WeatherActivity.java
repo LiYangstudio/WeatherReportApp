@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +20,10 @@ import android.widget.TextView;
 
 import com.LiYang.R;
 import com.LiYang.db.WeatherDB;
-import com.LiYang.service.MyService;
+import com.LiYang.service.NotiAndUpdateService;
 import com.LiYang.util.HttpCallbackListener;
 import com.LiYang.util.HttpUtil;
-import com.LiYang.util.Utility;
+import com.LiYang.util.UtilityWeather;
 
 import java.net.URLEncoder;
 
@@ -209,7 +208,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                     HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                         @Override
                         public void onFinish(String response) {
-                            Utility.handleWeatherResponse(WeatherActivity.this, response);
+                            UtilityWeather.handleWeatherResponse(WeatherActivity.this, response);
                             Log.d("WeatherActivity", "网络申请成功/n");
                             Message message = new Message();
                             message.what = 1;
@@ -233,7 +232,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
 
 
     private void showWeather() {   //从SharedPreferences里查询相关数据并显示在屏幕上
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = getSharedPreferences("weatherInformation", MODE_PRIVATE);
 
 
         mWeatherDespText.setText(prefs.getString("todayWeather", ""));
@@ -291,7 +290,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         mSeventhDayFb.setImageResource(getResources().getIdentifier(prefs.getString("7dayFb", ""), "drawable", getPackageName()));
 
 
-        Intent notificationIntent = new Intent(this, MyService.class);
+        Intent notificationIntent = new Intent(this, NotiAndUpdateService.class);
 
 
         startService(notificationIntent);
@@ -310,7 +309,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.weather_bu_refreshWeather:
                 mWeatherDespText.setText("加载中···");
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences preferences = getSharedPreferences("weatherInformation",MODE_PRIVATE);
                 String districtNameA = preferences.getString("city_name", "");
                 queryWeather(districtNameA);
 
@@ -372,7 +371,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         Intent email = new Intent(android.content.Intent.ACTION_SEND);
         email.setType("plain/text");
         String subjectStr = "天气预报";
-        String emailBody = Utility.getTodayInfo();//邮件的主要内容
+        String emailBody = UtilityWeather.getTodayInfo();//邮件的主要内容
         email.putExtra(android.content.Intent.EXTRA_SUBJECT, subjectStr);
         email.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
         startActivityForResult(Intent.createChooser(email, "请选择邮件发送内容"), 1001);
@@ -380,7 +379,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
 
 
     private void sendSMS() {
-        String smsBody = Utility.getTodayInfo();//短信的主要内容
+        String smsBody = UtilityWeather.getTodayInfo();//短信的主要内容
         Uri smsToUri = Uri.parse("今日天气预报");
         Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
         sendIntent.putExtra("sms_body", smsBody);

@@ -1,10 +1,9 @@
 package com.LiYang.bean;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class City {
-    private int id;
+public class CityBean {private int id;
     private String cityName;
     private int provinceId; //该地区对应的省序号
 
@@ -32,7 +31,3 @@ public class City {
         this.provinceId = provinceId;
     }
 }
-
-
-
-

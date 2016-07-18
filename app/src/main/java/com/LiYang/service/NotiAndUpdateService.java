@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -16,14 +15,14 @@ import com.LiYang.R;
 import com.LiYang.activity.WeatherActivity;
 import com.LiYang.util.HttpCallbackListener;
 import com.LiYang.util.HttpUtil;
-import com.LiYang.util.Utility;
+import com.LiYang.util.UtilityWeather;
 
 import java.net.URLEncoder;
 
 /**
- * Created by A555LF on 2016/7/15.
+ * Created by A555LF on 2016/7/18.
  */
-public class MyService extends Service {  //一个Service完成后台更新服务和定时更新
+public class NotiAndUpdateService extends Service {  //一个Service完成后台更新服务和定时更新
     private String mDistrictName;
 
     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
@@ -38,7 +37,7 @@ public class MyService extends Service {  //一个Service完成后台更新服�
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs =getSharedPreferences("weatherInformation",MODE_PRIVATE);
         mBuilder.setWhen(System.currentTimeMillis());
         mBuilder.setSmallIcon(R.drawable.ic_notification);
         mBuilder.setContentTitle(prefs.getString("city_name", ""));
@@ -68,7 +67,7 @@ public class MyService extends Service {  //一个Service完成后台更新服�
                 updateWeather();
             }
         }).start();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs =getSharedPreferences("weatherInformation",MODE_PRIVATE);
         mBuilder.setContentTitle(prefs.getString("city_name", ""));
         mBuilder.setContentText(prefs.getString("todayWeather", ""));
 
@@ -95,7 +94,7 @@ public class MyService extends Service {  //一个Service完成后台更新服�
     }
 
     private void updateWeather() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs =getSharedPreferences("weatherInformation",MODE_PRIVATE);
         mDistrictName = prefs.getString("city_name", "");
 
 
@@ -105,7 +104,7 @@ public class MyService extends Service {  //一个Service完成后台更新服�
             HttpUtil.httpClientSend(address, new HttpCallbackListener() {
                 @Override
                 public void onFinish(String respone) {
-                    Utility.handleWeatherResponse(MyService.this, respone);
+                    UtilityWeather.handleWeatherResponse(NotiAndUpdateService.this, respone);
                 }
 
                 @Override
@@ -119,4 +118,5 @@ public class MyService extends Service {  //一个Service完成后台更新服�
     }
 
 }
+
 
