@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -19,9 +20,8 @@ import com.LiYang.bean.CityBean;
 import com.LiYang.bean.DistrictBean;
 import com.LiYang.bean.ProvinceBean;
 import com.LiYang.db.WeatherDB;
-import com.LiYang.util.HttpCallbackListener;
-import com.LiYang.util.HttpUtil;
-import com.LiYang.util.UtilityDistrict;
+import com.LiYang.util.GsonUtilityDistrict;
+import com.LiYang.util.UtilTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,13 +175,12 @@ public class ChooseAreaActivity extends Activity {
     }
 
 
-    private void queryFromServer(final String type) {
+    /** private void queryFromServer(final String type) {
         showProgressDialog();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                HttpUtil.httpClientSend("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", new HttpCallbackListener() {
+
+               VolleyUtil.VolleyUtilSend("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", this, new VolleyCallbackListener() {
+
                     @Override
                     public void onFinish(String response) {
                         boolean result = UtilityDistrict.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
@@ -190,7 +189,7 @@ public class ChooseAreaActivity extends Activity {
                             message.what = 1;
                             message.obj = type;
                             handler.sendMessage(message);
-                            //通过runOnUiThread()方法回到主线程处理逻辑
+
 
                         }
 
@@ -206,9 +205,8 @@ public class ChooseAreaActivity extends Activity {
                     }
                 });
             }
-        }).start();
+     **/
 
-    }
 
 
     private void showProgressDialog() {
@@ -240,6 +238,36 @@ public class ChooseAreaActivity extends Activity {
             }
             finish();
         }
+    }
+    private void queryFromServer(final String type){
+        showProgressDialog();
+        Log.d("CHOOSE","在方格栏之后");
+        UtilTask utilTask=new UtilTask("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", this);
+        Log.d("CHOOSE","在网址之后");
+        utilTask.execute();
+        utilTask.setTaskHelper(new UtilTask.TaskHelper() {
+            @Override
+            public void onSuccess(String response) {
+                boolean result = GsonUtilityDistrict.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
+                if (result) {
+                    Message message = new Message();
+                    message.what = 1;
+                    message.obj = type;
+                    handler.sendMessage(message);
+
+
+                }
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                Message message = new Message();
+                message.what = 0;
+                handler.sendMessage(message);
+            }
+        });
+
+
     }
 
 }

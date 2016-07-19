@@ -13,9 +13,8 @@ import android.util.Log;
 
 import com.LiYang.R;
 import com.LiYang.activity.WeatherActivity;
-import com.LiYang.util.HttpCallbackListener;
-import com.LiYang.util.HttpUtil;
-import com.LiYang.util.UtilityWeather;
+import com.LiYang.util.GsonUtilityWeather;
+import com.LiYang.util.UtilTask;
 
 import java.net.URLEncoder;
 
@@ -59,14 +58,11 @@ public class NotiAndUpdateService extends Service {  //一个Service完成后台
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
 
 
                 updateWeather();
-            }
-        }).start();
+
         SharedPreferences prefs =getSharedPreferences("weatherInformation",MODE_PRIVATE);
         mBuilder.setContentTitle(prefs.getString("city_name", ""));
         mBuilder.setContentText(prefs.getString("todayWeather", ""));
@@ -101,15 +97,17 @@ public class NotiAndUpdateService extends Service {  //一个Service完成后台
         try {
             String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(mDistrictName, "UTF-8") +
                     "&key=97bd106d65a01a5e6b283518cc7474fa";
-            HttpUtil.httpClientSend(address, new HttpCallbackListener() {
+            UtilTask utilTask=new UtilTask(address,this);
+            utilTask.execute();
+            utilTask.setTaskHelper(new UtilTask.TaskHelper() {
                 @Override
-                public void onFinish(String respone) {
-                    UtilityWeather.handleWeatherResponse(NotiAndUpdateService.this, respone);
+                public void onSuccess(String response) {
+                    GsonUtilityWeather.handleWeatherResponse(NotiAndUpdateService.this, response);
                 }
 
                 @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
+                public void onFail(Exception e) {
+                  e.printStackTrace();
                 }
             });
         } catch (Exception e) {

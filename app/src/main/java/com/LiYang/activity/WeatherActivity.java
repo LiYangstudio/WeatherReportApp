@@ -21,8 +21,8 @@ import android.widget.TextView;
 import com.LiYang.R;
 import com.LiYang.db.WeatherDB;
 import com.LiYang.service.NotiAndUpdateService;
-import com.LiYang.util.HttpCallbackListener;
-import com.LiYang.util.HttpUtil;
+import com.LiYang.util.GsonUtilityWeather;
+import com.LiYang.util.UtilTask;
 import com.LiYang.util.UtilityWeather;
 
 import java.net.URLEncoder;
@@ -195,17 +195,15 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
     }
 
     //查询天气
-    private void queryWeather(String name) {      //从服务器查询天气信息，
+  /**  private void queryWeather(String name) {      //从服务器查询天气信息，
         mNewName = name;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
                 try {
                     String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(mNewName, "UTF-8") +
                             "&key=97bd106d65a01a5e6b283518cc7474fa";
                     Log.d("WeatherActivity", "网络申请/n");
 
-                    HttpUtil.httpClientSend(address, new HttpCallbackListener() {
+                   VolleyUtil.VolleyUtilSend(address,this, new VolleyCallbackListener() {
                         @Override
                         public void onFinish(String response) {
                             UtilityWeather.handleWeatherResponse(WeatherActivity.this, response);
@@ -226,9 +224,10 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                     e.printStackTrace();
                 }
             }
-        }).start();
+   **/
 
-    }
+
+
 
 
     private void showWeather() {   //从SharedPreferences里查询相关数据并显示在屏幕上
@@ -394,6 +393,39 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
                 .setCancelable(true)
                 .show();
     }
+    private void queryWeather(String name){
+
+        mNewName = name;
+
+        try {
+            String address = "http://v.juhe.cn/weather/index?format=2&cityname=" + URLEncoder.encode(mNewName, "UTF-8") +
+                    "&key=97bd106d65a01a5e6b283518cc7474fa";
+            Log.d("WeatherActivity", "网络申请/n");
+
+            UtilTask utilTask=new UtilTask(address,this);
+            utilTask.execute();
+            utilTask.setTaskHelper(new UtilTask.TaskHelper() {
+                @Override
+                public void onSuccess(String response) {
+                    GsonUtilityWeather.handleWeatherResponse(WeatherActivity.this, response);
+                    Log.d("WeatherActivity", "网络申请成功/n");
+                    Message message = new Message();
+                    message.what = 1;
+                    handler.sendMessage(message);
+                }
+
+                @Override
+                public void onFail(Exception e) {
+                    Message message = new Message();
+                    message.what = 0;
+                    handler.sendMessage(message);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 }
