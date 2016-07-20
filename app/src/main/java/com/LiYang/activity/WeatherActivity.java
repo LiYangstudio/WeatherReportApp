@@ -23,7 +23,6 @@ import com.LiYang.db.WeatherDB;
 import com.LiYang.service.NotiAndUpdateService;
 import com.LiYang.util.GsonUtilityWeather;
 import com.LiYang.util.UtilTask;
-import com.LiYang.util.UtilityWeather;
 
 import java.net.URLEncoder;
 
@@ -370,7 +369,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
         Intent email = new Intent(android.content.Intent.ACTION_SEND);
         email.setType("plain/text");
         String subjectStr = "天气预报";
-        String emailBody = UtilityWeather.getTodayInfo();//邮件的主要内容
+        String emailBody = GsonUtilityWeather.getTodayInfo();//邮件的主要内容
         email.putExtra(android.content.Intent.EXTRA_SUBJECT, subjectStr);
         email.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
         startActivityForResult(Intent.createChooser(email, "请选择邮件发送内容"), 1001);
@@ -378,7 +377,7 @@ public class WeatherActivity extends Activity implements View.OnClickListener {
 
 
     private void sendSMS() {
-        String smsBody = UtilityWeather.getTodayInfo();//短信的主要内容
+        String smsBody = GsonUtilityWeather.getTodayInfo();//短信的主要内容
         Uri smsToUri = Uri.parse("今日天气预报");
         Intent sendIntent = new Intent(Intent.ACTION_VIEW, smsToUri);
         sendIntent.putExtra("sms_body", smsBody);
