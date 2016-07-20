@@ -23,7 +23,7 @@ public class UtilTask extends AsyncTask<Void,Integer,Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         Log.d("UtilTask","新写的东西生效");
-        VolleyUtil.VolleyUtilSend(address, context, new VolleyCallbackListener() {
+        SingletonVolleyUtil.VolleyUtilSend(address, context, new VolleyCallbackListener() {
             @Override
             public void onFinish(String response) {
              taskHelper.onSuccess(response.toString());
