@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by A555LF on 2016/7/19.
  */
-public class GsonUtilityDistrict {
+public class GsonUtilityDistrict {  //Gson解析返回的服务器的地区信息
     private static WeatherDB mWeatherDB;
 
     public static boolean handleResponse(WeatherDB weatherDB, String response) {

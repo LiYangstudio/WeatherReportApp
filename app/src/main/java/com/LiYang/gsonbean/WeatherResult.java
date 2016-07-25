@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by A555LF on 2016/7/19.
  */
-public class WeatherResult {
+public class WeatherResult {//基于Gson解析对聚合数据的Json数据设置的一些类
     Sk sk;
     Today today;
     List<Future> future;

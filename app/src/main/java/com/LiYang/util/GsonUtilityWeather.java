@@ -17,18 +17,23 @@ import java.util.List;
 /**
  * Created by A555LF on 2016/7/19.
  */
-public class GsonUtilityWeather {
+public class GsonUtilityWeather {//Gson解析服务器返回的天气信息
     private static String mTodayInfo;  //发短信和邮件的文本
 
     public static String getTodayInfo() {
         return mTodayInfo;
     }
 
-    public static boolean handleWeatherResponse(Context context, String data) {
+    public synchronized static boolean handleWeatherResponse(Context context, String data,int g) {
+
+
+
         List<FutureWeatherBean> futureWeatherList = new ArrayList<>();
         Gson gson = new Gson();
         WeatherInformaionUtility weatherInformaionUtility = gson.fromJson(data, WeatherInformaionUtility.class);
+
         if (weatherInformaionUtility.getResultcode().equals("200")) {
+
             Sk sk = weatherInformaionUtility.getResult().getSk();
             List<Future> future = weatherInformaionUtility.getResult().getFuture();
             Today today = weatherInformaionUtility.getResult().getToday();
@@ -83,19 +88,24 @@ public class GsonUtilityWeather {
 
                 futureWeatherList.add(futureBean);
             }
-            mTodayInfo = date + cityName + "天气信息列表:" + "\n  温度：" + temperature + "\n  天气：" + weather + "\n  风力:" + wind + "\n  湿度：" + humidity + "\n穿衣指数：" + cloth + "\n旅游指数：" + travel + "\n紫外线强度：" + sun;
 
-            return saveWeatherInfo(context, cityName, weather, temperature, date, futureWeatherList, time, fa, fb, sun, exercises, humidity, wind, travel, cloth, todayWeek, washCar, windStrength, windDirection, clothAdvice);
+            mTodayInfo = date + cityName + "天气信息列表:" + "\n  温度：" + temperature + "\n  天气：" + weather + "\n  风力:" + wind + "\n  湿度：" + humidity + "\n穿衣指数：" + cloth + "\n旅游指数：" + travel + "\n紫外线强度：" + sun;
+            Log.d("解析的时间信息列表","天气信息"+mTodayInfo);
+            Log.d("现在的g",g+"g值为"+g);
+                return saveWeatherInfo(context, cityName, weather, temperature, date, futureWeatherList, time, fa, fb, sun, exercises, humidity, wind, travel, cloth, todayWeek, washCar, windStrength, windDirection, clothAdvice,g);
 
 
         }
         return false;
     }
 
-    private static boolean saveWeatherInfo(Context context, String cityName, String weather,
-                                           String temperature, String date, List<FutureWeatherBean> list, String time, String fa, String fb, String sun, String exercises, String humidity, String wind, String travel, String cloth, String todayWeek, String washCar, String windStrength, String windDirection, String clothAdvice) {
-        SharedPreferences prefs =context.getSharedPreferences("weatherInformation",context.MODE_PRIVATE);
+    private static synchronized  boolean saveWeatherInfo(Context context, String cityName, String weather,
+                                           String temperature, String date, List<FutureWeatherBean> list, String time, String fa, String fb, String sun, String exercises, String humidity, String wind, String travel, String cloth, String todayWeek, String washCar, String windStrength, String windDirection, String clothAdvice,int g) {
+
+
+        SharedPreferences prefs =context.getSharedPreferences(g+"cityWeatherInformation",context.MODE_PRIVATE);  //因为常用城市列表最多只有4个城市，所以设置四个表分别存储城市信息，表名为g+"cityWeatherInformation，g是当前的城市在已选择列表中的序号
         SharedPreferences.Editor editor =prefs.edit();
+        editor.putString("citySMS",mTodayInfo);
         editor.putBoolean("citySelected", true);
         editor.putString("city_name", cityName);
         editor.putString("todayWeather", weather);

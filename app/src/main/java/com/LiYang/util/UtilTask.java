@@ -8,30 +8,34 @@ import android.util.Log;
  * Created by A555LF on 2016/7/19.
  */
 public class UtilTask extends AsyncTask<Void,Integer,Boolean> {
-    private TaskHelper taskHelper;
-    private String address;
+    private TaskHelper mTaskHelper;
+    private String mAddress;
+    private int mI;
+
     Context context;
 
 
 
-    public UtilTask(String address, Context context) {
-        this.address = address;
+    public UtilTask(String address, Context context,int i) {
+        this.mAddress = address;
         this.context = context;
+        this.mI=i;
 
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
         Log.d("UtilTask","新写的东西生效");
-        SingletonVolleyUtil.VolleyUtilSend(address, context, new VolleyCallbackListener() {
+        SingletonVolleyUtil.VolleyUtilSend(mAddress, context, new VolleyCallbackListener() {
             @Override
             public void onFinish(String response) {
-             taskHelper.onSuccess(response.toString());
+
+             mTaskHelper.onSuccess(response.toString(),mI);
             }
 
             @Override
             public void onError(Exception e) {
-                taskHelper.onFail(e);
+                mTaskHelper.onFail(e);
             }
         });
 
@@ -39,13 +43,13 @@ public class UtilTask extends AsyncTask<Void,Integer,Boolean> {
     }
 
     public interface TaskHelper{
-        void onSuccess(String response);
+        void onSuccess(String response,int i);
         void onFail(Exception e);
 
 
     }
     public void setTaskHelper(TaskHelper taskHelper){
-        this.taskHelper=taskHelper;
+        this.mTaskHelper=taskHelper;
     }
 
 

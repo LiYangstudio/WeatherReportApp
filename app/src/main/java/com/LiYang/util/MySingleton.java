@@ -9,7 +9,7 @@ import com.android.volley.toolbox.Volley;
 /**
  * Created by A555LF on 2016/7/20.
  */
-public class MySingleton {
+public class MySingleton {  //单例模式
     private static MySingleton mInstance;
     private RequestQueue mRequestQueue;
     private static Context mContext;

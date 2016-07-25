@@ -2,46 +2,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@mipmap/ic_up"
         android:orientation="vertical">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <Button
-                android:id="@+id/weather_bu_switchCity"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:background="@mipmap/ic_home" />
-
-            <TextView
-                android:id="@+id/weather_tv_cityName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="天气信息界面"
-                android:textColor="#fff"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/weather_bu_refreshWeather"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentRight="true"
-
-                android:layout_marginTop="10dp"
-                android:background="@mipmap/ic_refresh" />
-
-        </RelativeLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,6 +32,9 @@
 
 
         </LinearLayout>
+
+
+
 
         <LinearLayout
             android:layout_width="match_parent"

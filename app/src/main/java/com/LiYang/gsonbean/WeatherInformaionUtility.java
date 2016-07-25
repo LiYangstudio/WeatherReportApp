@@ -3,7 +3,7 @@ package com.LiYang.gsonbean;
 /**
  * Created by A555LF on 2016/7/19.
  */
-public class WeatherInformaionUtility {
+public class WeatherInformaionUtility {//基于Gson解析对聚合数据的Json数据设置的一些类
     String resultcode;
     String reason;
     WeatherResult result;

@@ -3,7 +3,7 @@ package com.LiYang.gsonbean;
 /**
  * Created by A555LF on 2016/7/19.
  */
-public class Sk {
+public class Sk {//基于Gson解析对聚合数据的Json数据设置的一些类
     String temp;
     String wind_direction;
     String wind_strength;

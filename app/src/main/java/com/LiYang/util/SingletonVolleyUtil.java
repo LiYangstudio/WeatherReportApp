@@ -1,7 +1,6 @@
 package com.LiYang.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -13,7 +12,7 @@ import com.android.volley.toolbox.StringRequest;
  */
 public class SingletonVolleyUtil {
     public static void VolleyUtilSend(String adress, Context context, final VolleyCallbackListener listener){
-        Log.d("VolleyUtil","网络解析已经开始");
+
         RequestQueue mQueue= MySingleton.getInstance(context.getApplicationContext()).getRequestQueue();
         StringRequest stringRequest=new StringRequest(adress,new Response.Listener<String>(){
             @Override

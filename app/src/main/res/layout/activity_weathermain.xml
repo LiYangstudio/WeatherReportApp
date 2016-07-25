@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/test_lan"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@mipmap/ic_up"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <Button
+            android:id="@+id/weather_bu_switchCity"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@mipmap/ic_home" />
+
+        <TextView
+            android:id="@+id/weather_tv_cityName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="天气信息界面"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/weather_bu_refreshWeather"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/ic_refresh" />
+
+    </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/weather_ll_fourbutton"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+        <Button
+            android:id="@+id/weather_ll_buttonone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#009eff"
+            android:textColor="#fff"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/weather_ll_buttontwo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#009eff"
+            android:textColor="#fff"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/weather_ll_buttonthree"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#009eff"
+            android:textColor="#fff"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/weather_ll_buttonfour"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#009eff"
+            android:textColor="#fff"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/weahther_iv_fugai"
+        android:layout_width="60dp"
+        android:layout_height="50dp"
+        android:background="#CC0000"
+        android:layout_alignParentBottom="true"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#f00"
+        android:layout_above="@id/weather_ll_fourbutton"
+        />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/weather_viewpager"
+        android:layout_above="@id/weather_ll_fourbutton"
+        android:layout_below="@+id/test_lan"
+        android:layout_marginBottom="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+</RelativeLayout>

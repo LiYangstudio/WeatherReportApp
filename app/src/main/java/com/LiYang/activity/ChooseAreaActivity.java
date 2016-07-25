@@ -7,9 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +20,7 @@ import com.LiYang.bean.CityBean;
 import com.LiYang.bean.DistrictBean;
 import com.LiYang.bean.ProvinceBean;
 import com.LiYang.db.WeatherDB;
+import com.LiYang.service.NotiAndUpdateService;
 import com.LiYang.util.GsonUtilityDistrict;
 import com.LiYang.util.UtilTask;
 
@@ -29,7 +30,7 @@ import java.util.List;
 /**
  * Created by A555LF on 2016/7/15.
  */
-public class ChooseAreaActivity extends Activity {
+public class ChooseAreaActivity extends Activity implements View.OnClickListener{
 
     private static final int LEVEL_PROVINCE = 0;
     private static final int LEVEL_CITY = 1;
@@ -38,6 +39,7 @@ public class ChooseAreaActivity extends Activity {
     private ProgressDialog mProgressDialog;
     private TextView mTitleText;
     private ListView mListView;
+    private ListView mSelectedCityListView;
     private List<String> mLists;
 
     private WeatherDB mWeatherDB;
@@ -47,9 +49,16 @@ public class ChooseAreaActivity extends Activity {
     private ProvinceBean mSelectedProvince;
     private CityBean mSelectedCity;
     private int mCurrentLevel;
-  private boolean mFromWeatherActivity;
+    private boolean mFromWeatherActivity;
     private CityAdapter mCityAdapter;
+    private CityAdapter mSelectedCityAdapter;
+    private int mNumberOfCity=1;//这个标志用于标识该选中城市在已选中城市列表的位置，从1开始
+    private List<String> mSelectedCityList;
+    private Button mClearButton;//清除常用城市的按钮
 
+    private Button mQueryName;
+
+    private String mSelectedName;
 
     private Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -89,14 +98,40 @@ public class ChooseAreaActivity extends Activity {
             finish();
             return;
         }
-        setContentView(R.layout.activity_choosearea);
+        setContentView(R.layout.activity_newchoosearea);
 
         mTitleText = (TextView) findViewById(R.id.chooseareaactivity_tv_titletext);
         mListView = (ListView) findViewById(R.id.chooseareaactivity_lv_list);
-        mLists = new ArrayList<>();
-        mCityAdapter = new CityAdapter(this, R.layout.activity_citylist, mLists);
-        mWeatherDB = WeatherDB.getInstance(this);
+        mSelectedCityListView=(ListView)findViewById(R.id.chooseareaactivity_lv_listview);
+        mClearButton=(Button) findViewById(R.id.chooseareaactivity_bu_clear);
 
+
+        mQueryName=(Button)findViewById(R.id.chooseareaactivity_bu_query) ;
+        mQueryName.setOnClickListener(this);
+        mClearButton.setOnClickListener(this);
+
+
+        mLists = new ArrayList<>();
+        mSelectedCityList=new ArrayList<>();
+
+
+       SharedPreferences prefs=getSharedPreferences("selectedCity",MODE_PRIVATE);//由于每一次Activity跳转时，
+                                                                                // 容器里储存的称市列表会清空，
+                                                                                 // 所以每次跳转活动把之前储存在SharePreference里的信息读到容器
+        for(int g=1;g<5;g++){    //储存容器里保存的已选择城市，key为g+city，使用数字开头为了方便循环。
+            String name=prefs.getString(g+"city","");
+            if(!(name.equals(""))){
+                mSelectedCityList.add(name);
+                mNumberOfCity++;
+
+            }
+        }
+
+
+        mCityAdapter = new CityAdapter(this, R.layout.activity_citylist, mLists);//全国城市列表的适配器
+        mSelectedCityAdapter=new CityAdapter(this,R.layout.activity_citylist,mSelectedCityList);
+        mWeatherDB = WeatherDB.getInstance(this);
+        mSelectedCityListView.setAdapter(mSelectedCityAdapter);
         mListView.setAdapter(mCityAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -111,14 +146,40 @@ public class ChooseAreaActivity extends Activity {
                     queryDistricts();
                 } else if (mCurrentLevel == LEVEL_DISTRICT) {
 
-                    String districtName = mDistrictList.get(i).getDistrictName();
-                    Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
-                    intent.putExtra("district_name", districtName);
-                    startActivity(intent);
-                    finish();
+                    mSelectedName = mDistrictList.get(i).getDistrictName();
+                    if(mNumberOfCity<5) {//限制选择常用城市最多4个，该数从1开始计数
+
+
+                        SharedPreferences prefs = getSharedPreferences("selectedCity", MODE_PRIVATE);//定义一个Selected的表用于储存已经被选为常用城市的列表
+                        SharedPreferences.Editor editor = prefs.edit();
+
+                        editor.putString(mNumberOfCity + "city", mSelectedName);
+
+                        editor.commit();
+                        mSelectedCityList.add(mSelectedName);
+
+                        mSelectedCityAdapter.notifyDataSetChanged();
+
+                        mListView.setAdapter(mCityAdapter);
+
+
+                        mNumberOfCity++;
+
+
+                        }
+
+
+
+
+                    }
+
+
                 }
-            }
+
+
         });
+
+
         queryProvinces(); //加载省级数据
 
     }
@@ -175,37 +236,6 @@ public class ChooseAreaActivity extends Activity {
     }
 
 
-    /** private void queryFromServer(final String type) {
-        showProgressDialog();
-
-
-               VolleyUtil.VolleyUtilSend("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", this, new VolleyCallbackListener() {
-
-                    @Override
-                    public void onFinish(String response) {
-                        boolean result = UtilityDistrict.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
-                        if (result) {
-                            Message message = new Message();
-                            message.what = 1;
-                            message.obj = type;
-                            handler.sendMessage(message);
-
-
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onError(Exception e) {
-                        Message message = new Message();
-                        message.what = 0;
-                        handler.sendMessage(message);
-
-                    }
-                });
-            }
-     **/
 
 
 
@@ -241,13 +271,13 @@ public class ChooseAreaActivity extends Activity {
     }
     private void queryFromServer(final String type){
         showProgressDialog();
-        Log.d("CHOOSE","在方格栏之后");
-        UtilTask utilTask=new UtilTask("http://v.juhe.cn/weather/citys?key=97bd106d65a01a5e6b283518cc7474fa", this);
-        Log.d("CHOOSE","在网址之后");
+
+        UtilTask utilTask=new UtilTask("http://v.juhe.cn/weather/citys?key=fcfd0e92c41ad993b93b49ba0f840aff", this,0);
+
         utilTask.execute();
         utilTask.setTaskHelper(new UtilTask.TaskHelper() {
             @Override
-            public void onSuccess(String response) {
+            public void onSuccess(String response,int h) {
                 boolean result = GsonUtilityDistrict.handleResponse(WeatherDB.getInstance(getApplicationContext()), response);
                 if (result) {
                     Message message = new Message();
@@ -267,6 +297,38 @@ public class ChooseAreaActivity extends Activity {
             }
         });
 
+
+    }
+    @Override
+    public void onClick(View view){
+        switch(view.getId()){
+            case R.id.chooseareaactivity_bu_query:
+
+               Intent notificationIntent = new Intent(this, NotiAndUpdateService.class);
+
+                startService(notificationIntent);//按下查询城市的同时开始后台服务。
+
+                Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+                startActivity(intent);
+
+                finish();
+                break;
+            case R.id.chooseareaactivity_bu_clear://清除常用城市列表的按键，按下一次常用列表按从后往前的顺序删除一个城市，同时把该城市从SharePreference从去除
+                if(mNumberOfCity>=2) {
+                    SharedPreferences prefs = getSharedPreferences("selectedCity", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString((mNumberOfCity - 1) + "city", "");
+                    editor.commit();
+
+                    mSelectedCityList.remove(mNumberOfCity - 2);
+                    mNumberOfCity = mNumberOfCity - 1;
+                    mSelectedCityAdapter.notifyDataSetChanged();
+                }
+                break;
+
+
+
+        }
 
     }
 
